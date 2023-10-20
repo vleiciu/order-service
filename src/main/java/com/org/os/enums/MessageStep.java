@@ -1,8 +1,5 @@
 package com.org.os.enums;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public enum MessageStep {
 
     PAYMENT_REQUEST,
