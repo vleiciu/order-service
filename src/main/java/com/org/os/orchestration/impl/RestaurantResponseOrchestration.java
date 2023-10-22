@@ -2,7 +2,6 @@ package com.org.os.orchestration.impl;
 
 import com.org.ma.enums.MessageType;
 import com.org.ma.enums.Subject;
-import com.org.ma.model.OrderCommand;
 import com.org.ma.utils.Constants;
 import com.org.os.enums.Status;
 import com.org.os.orchestration.api.ResponseOrchestration;
@@ -36,9 +35,9 @@ public class RestaurantResponseOrchestration implements ResponseOrchestration {
     }
 
     private void handleRegularResponse(Exchange e) {
-        OrderCommand command = e.getMessage(OrderCommand.class);
-        Order order = service.getOrderByCorrelationId(command.getCorrelationId());
-        ProducerRecord<String, String> record = new ProducerRecord<>(ORDER_CHANNEL, MESSAGE, command.getCorrelationId());
+        String correlationId = e.getMessage(String.class);
+        Order order = service.getOrderByCorrelationId(correlationId);
+        ProducerRecord<String, String> record = new ProducerRecord<>(ORDER_CHANNEL, MESSAGE, correlationId);
 
         record.headers().add(SUBJECT, "%s_%s".formatted(Subject.DELIVERY.name(), REQUEST.name()).getBytes());
         record.headers().add(MESSAGE_TYPE, MessageType.REGULAR.name().getBytes());
@@ -48,8 +47,8 @@ public class RestaurantResponseOrchestration implements ResponseOrchestration {
     }
 
     private void handleRejectCancelResponse(Exchange e) {
-        OrderCommand command = e.getMessage(OrderCommand.class);
-        ProducerRecord<String, String> record = new ProducerRecord<>(ORDER_CHANNEL, MESSAGE, command.getCorrelationId());
+        String correlationId = e.getMessage(String.class);
+        ProducerRecord<String, String> record = new ProducerRecord<>(ORDER_CHANNEL, MESSAGE, correlationId);
         record.headers().add(SUBJECT, "%s_%s".formatted(Subject.PAYMENT.name(), REQUEST.name()).getBytes());
         record.headers().add(Constants.MESSAGE_TYPE, e.getIn().getHeader(Constants.MESSAGE_TYPE, MessageType.class).toString().getBytes());
         producer.send(record);

@@ -48,7 +48,7 @@ public class Users implements UserDetails {
     @Column(name = "PAYMENT_INFO")
     private String paymentInfo;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     @OneToMany(mappedBy = "users")

@@ -28,7 +28,6 @@ public class Restaurant {
     @OneToMany(mappedBy = "restaurant")
     private List<Items> restaurantItems;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "restaurants")
+    @OneToMany(mappedBy = "restaurants", fetch = FetchType.EAGER)
     private List<Order> orders;
 }

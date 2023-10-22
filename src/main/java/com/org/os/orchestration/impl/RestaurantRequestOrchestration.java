@@ -50,6 +50,7 @@ public class RestaurantRequestOrchestration implements RequestOrchestration {
         ProducerRecord<String, OrderCommand> record = new ProducerRecord<>(RESTAURANT_CHANNEL, MESSAGE, OrderCommand.builder()
                 .correlationId(order.getCorrelationId())
                 .restaurantId(order.getLineOrder().get(0).getItems().getRestaurant().getRestaurantId())
+                .placedAt(order.getPlacedAt())
                 .itemsList(order.getLineOrder()
                         .stream()
                         .map(items -> {
