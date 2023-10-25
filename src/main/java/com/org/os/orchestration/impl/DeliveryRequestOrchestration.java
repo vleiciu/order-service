@@ -1,5 +1,7 @@
 package com.org.os.orchestration.impl;
 
+import com.org.ma.enums.MessageType;
+import com.org.ma.enums.Subject;
 import com.org.ma.model.Delivery;
 import com.org.os.orchestration.api.RequestOrchestration;
 import com.org.os.persistance.entity.Order;
@@ -12,8 +14,9 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
-import static com.org.ma.utils.Constants.DELIVERY_CHANNEL;
-import static com.org.ma.utils.Constants.MESSAGE;
+import static com.org.ma.enums.Header.REQUEST;
+import static com.org.ma.utils.Constants.*;
+import static com.org.ma.utils.Constants.MESSAGE_TYPE;
 
 @Component
 @AllArgsConstructor
@@ -36,6 +39,8 @@ public class DeliveryRequestOrchestration implements RequestOrchestration {
                 .restaurantId(order.getRestaurants().getRestaurantId())
                 .submittedAt(LocalDateTime.now())
                 .build());
+        record.headers().add(SUBJECT, "%s_%s".formatted(Subject.DELIVERY.name(), REQUEST.name()).getBytes());
+        record.headers().add(MESSAGE_TYPE, MessageType.REGULAR.name().getBytes());
         producer.send(record);
     }
 }

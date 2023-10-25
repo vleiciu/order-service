@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Builder
 @Entity
@@ -24,7 +26,7 @@ public class Items {
     @JoinColumn(name = "restaurantItems")
     private Restaurant restaurant;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "items")
-    private LineItems cart;
+    private List<LineItems> cart;
 }

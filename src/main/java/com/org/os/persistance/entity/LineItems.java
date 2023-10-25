@@ -14,7 +14,8 @@ public class LineItems {
     @Column(name = "LINE_ID")
     private Integer lineId;
 
-    @OneToOne(mappedBy = "cart", fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "cart")
     private Items items;
 
     @Column(name = "QUANTITY")
