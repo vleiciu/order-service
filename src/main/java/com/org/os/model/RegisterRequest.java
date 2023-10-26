@@ -1,6 +1,5 @@
 package com.org.os.model;
 
-import com.org.os.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,8 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RegisterRequest {
 
-    private Integer userId;
-
     private String firstname;
 
     private String lastname;
@@ -22,5 +19,7 @@ public class RegisterRequest {
 
     private String password;
 
-    private Role role;
+    private String paymentInfo;
+
+    private String address;
 }

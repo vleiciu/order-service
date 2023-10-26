@@ -33,7 +33,8 @@ public class AuthenticationService {
 
     public AuthenticationResponse register(RegisterRequest request) {
         Users user = Users.builder()
-                .userId(request.getUserId())
+                .address(request.getAddress())
+                .paymentInfo(request.getPaymentInfo())
                 .firstName(request.getFirstname())
                 .lastName(request.getLastname())
                 .email(request.getEmail())
@@ -72,7 +73,6 @@ public class AuthenticationService {
 
     private void saveUserToken(Users user, String jwtToken) {
         Token token = Token.builder()
-                .tokenId(1)
                 .users(user)
                 .tokenValue(jwtToken)
                 .tokenType(TokenType.BEARER)

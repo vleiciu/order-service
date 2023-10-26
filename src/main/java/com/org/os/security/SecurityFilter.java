@@ -24,13 +24,12 @@ public class SecurityFilter {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> {
             try {
-                csrf.disable().authorizeHttpRequests(request -> request.requestMatchers("/api/v1/auth/**")
+                csrf.disable().authorizeHttpRequests(request -> request.requestMatchers("/auth/**")
                                 .permitAll()
-                                .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), MANAGER.name())
-                                .requestMatchers(GET, "/api/v1/management/**").hasAnyRole(ADMIN.name(), MANAGER.name())
-                                .requestMatchers(POST, "/api/v1/management/**").hasAnyRole(ADMIN.name(), MANAGER.name())
-                                .requestMatchers(PUT, "/api/v1/management/**").hasAnyRole(ADMIN.name(), MANAGER.name())
-                                .requestMatchers(DELETE, "/api/v1/management/**").hasAnyRole(ADMIN.name(), MANAGER.name())
+                                .requestMatchers("/register/**")
+                                .permitAll()
+                                .requestMatchers("/refresh/**")
+                                .permitAll()
                                 .anyRequest()
                                 .authenticated())
                         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
