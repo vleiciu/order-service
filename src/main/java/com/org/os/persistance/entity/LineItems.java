@@ -14,12 +14,12 @@ public class LineItems {
     @Column(name = "LINE_ID")
     private Integer lineId;
 
+    @Column(name = "QUANTITY")
+    private Integer quantity;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "cart")
     private Items items;
-
-    @Column(name = "QUANTITY")
-    private Integer quantity;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "lineOrder")
