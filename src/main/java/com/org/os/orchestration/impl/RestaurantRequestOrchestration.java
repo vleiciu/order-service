@@ -3,6 +3,7 @@ package com.org.os.orchestration.impl;
 import com.org.ma.enums.MessageType;
 import com.org.ma.model.Item;
 import com.org.ma.model.OrderCommand;
+import com.org.ma.model.PaymentUpdate;
 import com.org.ma.model.RestaurantUpdate;
 import com.org.ma.utils.Constants;
 import com.org.os.orchestration.api.RequestOrchestration;
@@ -77,10 +78,10 @@ public class RestaurantRequestOrchestration implements RequestOrchestration {
         Restaurant restaurant = restaurantService.getById(restaurantUpdate.getRestaurantId());
         if (restaurant != null) {
             restaurantUpdate.getItems().forEach(item -> itemsService.saveItem(Items.builder()
-                            .itemId(item.getItemId())
-                            .price(item.getPrice())
-                            .itemName(item.getItemName())
-                            .restaurant(restaurant)
+                    .itemId(item.getItemId())
+                    .price(item.getPrice())
+                    .itemName(item.getItemName())
+                    .restaurant(restaurant)
                     .build()));
         } else {
             Restaurant registerRestaurant = Restaurant.builder()
@@ -97,5 +98,10 @@ public class RestaurantRequestOrchestration implements RequestOrchestration {
                     .restaurant(registerRestaurant)
                     .build()));
         }
+        ordersService.registerPaymentInfo(PaymentUpdate.builder()
+                .participantId(restaurantUpdate.getPaymentInfo())
+                .available(10000.0)
+                .credit(0.0)
+                .build());
     }
 }

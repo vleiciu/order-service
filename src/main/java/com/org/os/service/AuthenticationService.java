@@ -1,6 +1,7 @@
 package com.org.os.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.org.ma.model.PaymentUpdate;
 import com.org.os.enums.Role;
 import com.org.os.enums.TokenType;
 import com.org.os.persistance.entity.Token;
@@ -30,6 +31,7 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final OrdersService ordersService;
 
     public AuthenticationResponse register(RegisterRequest request) {
         Users user = Users.builder()
@@ -43,6 +45,11 @@ public class AuthenticationService {
                 .role(Role.USER)
                 .build();
         Users savedUser = repository.save(user);
+        ordersService.registerPaymentInfo(PaymentUpdate.builder()
+                        .participantId(user.getPaymentInfo())
+                        .available(10000.0)
+                        .credit(0.0)
+                .build());
         String jwtToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
         saveUserToken(savedUser, jwtToken);

@@ -2,6 +2,7 @@ package com.org.os.service;
 
 import com.org.ma.enums.MessageType;
 import com.org.ma.enums.Subject;
+import com.org.ma.model.PaymentUpdate;
 import com.org.os.enums.Status;
 import com.org.os.exceptions.InvalidPhaseException;
 import com.org.os.persistance.entity.LineItems;
@@ -34,6 +35,8 @@ public class OrdersService {
     private RestaurantRepository restaurantRepository;
 
     private KafkaProducer<String, String> producer;
+
+    private KafkaProducer<String, PaymentUpdate> paymentProducer;
 
     private final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -110,5 +113,13 @@ public class OrdersService {
 
     public Order getOrderByCorrelationId(String correlationId) {
         return repository.findByCorrelationId(correlationId).orElseThrow(EntityNotFoundException::new);
+    }
+
+    public void registerPaymentInfo(PaymentUpdate paymentUpdate) {
+        ProducerRecord<String, PaymentUpdate> record = new ProducerRecord<>(PAYMENT_CHANNEL, MESSAGE, paymentUpdate);
+
+        record.headers().add(SUBJECT, "%s_%s".formatted(Subject.PAYMENT.name(), REQUEST.name()).getBytes());
+        record.headers().add(MESSAGE_TYPE, MessageType.INFO.name().getBytes());
+        paymentProducer.send(record);
     }
 }
