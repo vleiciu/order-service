@@ -13,14 +13,4 @@ import org.springframework.context.annotation.Configuration;
 @EnableCaching
 public class CachingConfig implements CachingConfigurer {
 
-    @Bean
-    @Override
-    public CacheManager cacheManager() {
-        return new ConcurrentMapCacheManager() {
-            @Override
-            protected Cache createConcurrentMapCache(String name) {
-                return new ConcurrentMapCache(name);
-            }
-        };
-    }
 }
