@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 @Builder
 @Entity
-@Table(name = "RESTAURANT")
+@Table(name = "RESTAURANTS")
 public class Restaurant {
 
     @Id
@@ -25,9 +25,9 @@ public class Restaurant {
     @Column(name = "PAYMENT_INFO")
     private String paymentInfo;
 
-    @OneToMany(mappedBy = "restaurant")
+    @OneToMany(mappedBy = "restaurant", fetch = FetchType.LAZY)
     private List<Items> restaurantItems;
 
-    @OneToMany(mappedBy = "restaurants", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "restaurants", fetch = FetchType.LAZY)
     private List<Order> orders;
 }

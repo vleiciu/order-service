@@ -33,12 +33,12 @@ public class Order {
     @Column(name = "DELIVERY_TIME")
     private LocalDateTime deliveryTime;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "orders")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_ID")
     private Users userOrders;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "orders")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "RESTAURANT_ID")
     private Restaurant restaurants;
 
     @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)

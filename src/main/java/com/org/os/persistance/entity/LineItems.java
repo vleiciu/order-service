@@ -17,11 +17,11 @@ public class LineItems {
     @Column(name = "QUANTITY")
     private Integer quantity;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "cart")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ITEM_ID")
     private Items items;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "lineOrder")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ORDER_ID")
     private Order order;
 }

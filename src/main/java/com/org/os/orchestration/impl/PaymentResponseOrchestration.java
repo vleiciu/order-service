@@ -9,8 +9,8 @@ import com.org.os.persistance.entity.Order;
 import com.org.os.service.OrdersService;
 import lombok.AllArgsConstructor;
 import org.apache.camel.Exchange;
-import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import static com.org.ma.enums.Header.REQUEST;
@@ -23,7 +23,7 @@ public class PaymentResponseOrchestration implements ResponseOrchestration {
 
     private OrdersService service;
 
-    private KafkaProducer<String, String> producer;
+    private KafkaTemplate<String, String> producer;
 
     @Override
     public void handleResponse(Exchange e) {
@@ -38,7 +38,7 @@ public class PaymentResponseOrchestration implements ResponseOrchestration {
     private void handleRegularResponse(Exchange e) {
         Payment payment = e.getMessage(Payment.class);
         Order order = service.getOrderByCorrelationId(payment.getCorrelationId());
-        ProducerRecord<String, String> record = new ProducerRecord<>(ORDER_CHANNEL, MESSAGE, payment.getCorrelationId());
+        ProducerRecord<String, String> record = new ProducerRecord<>(ORDER_CHANNEL, payment.getCorrelationId());
 
         record.headers().add(SUBJECT, "%s_%s".formatted(Subject.RESTAURANT.name(), REQUEST.name()).getBytes());
         record.headers().add(MESSAGE_TYPE, MessageType.REGULAR.name().getBytes());

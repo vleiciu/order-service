@@ -15,7 +15,7 @@ public class AmqpAdapter extends RouteBuilder {
 
     @Override
     public void configure() {
-        from("kafka:%s".formatted(ORDER_CHANNEL))
+        from("kafka:%s?brokers=localhost:9092".formatted(ORDER_CHANNEL))
                 .routeId("order-service")
                 .process(factory);
     }

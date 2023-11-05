@@ -15,13 +15,14 @@ import com.org.os.service.OrdersService;
 import com.org.os.service.RestaurantService;
 import lombok.AllArgsConstructor;
 import org.apache.camel.Exchange;
-import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
-import static com.org.ma.utils.Constants.*;
+import static com.org.ma.utils.Constants.MESSAGE_TYPE;
+import static com.org.ma.utils.Constants.RESTAURANT_CHANNEL;
 
 @Component
 @AllArgsConstructor
@@ -33,7 +34,7 @@ public class RestaurantRequestOrchestration implements RequestOrchestration {
 
     private RestaurantService restaurantService;
 
-    private KafkaProducer<String, OrderCommand> producer;
+    private KafkaTemplate<String, String> producer;
 
     @Override
     public void handleRequest(Exchange e) {
@@ -48,7 +49,7 @@ public class RestaurantRequestOrchestration implements RequestOrchestration {
     private void handleOtherRequests(Exchange e) {
         String correlationId = e.getMessage(String.class);
         Order order = ordersService.getOrderByCorrelationId(correlationId);
-        ProducerRecord<String, OrderCommand> record = new ProducerRecord<>(RESTAURANT_CHANNEL, MESSAGE, OrderCommand.builder()
+        ProducerRecord<String, String> record = new ProducerRecord<>(RESTAURANT_CHANNEL, OrderCommand.builder()
                 .correlationId(order.getCorrelationId())
                 .restaurantId(order.getLineOrder().get(0).getItems().getRestaurant().getRestaurantId())
                 .placedAt(order.getPlacedAt())
@@ -66,7 +67,7 @@ public class RestaurantRequestOrchestration implements RequestOrchestration {
                                             .build()).build();
                         })
                         .collect(Collectors.toList()))
-                .build());
+                .build().toString());
 
         record.headers().add(Constants.MESSAGE_TYPE, e.getIn().getHeader(Constants.MESSAGE_TYPE, MessageType.class).toString().getBytes());
         record.headers().add(Constants.SUBJECT, e.getIn().getHeader(Constants.SUBJECT, String.class).getBytes());
