@@ -1,8 +1,6 @@
 FROM eclipse-temurin:17-jdk-alpine
 VOLUME /tmp
-ARG DEPENDENCY=target/dependency
-COPY ${DEPENDENCY}/BOOT-INF/lib /app/lib
-COPY ${DEPENDENCY}/META-INF /app/META-INF
-COPY ${DEPENDENCY}/BOOT-INF/classes /app
-COPY ${DEPENDENCY}/BOOT-INF/classes/application.properties /app/com/org/os
-ENTRYPOINT ["java","-cp","app:app/lib/*","com.org.os.OrderServiceApplication"]
+EXPOSE 8081
+ARG JAR_FILE=target/OrderService-0.0.1-SNAPSHOT.jar
+ADD ${JAR_FILE} OrderService-0.0.1-SNAPSHOT.jar
+ENTRYPOINT ["java","-jar","/OrderService-0.0.1-SNAPSHOT.jar"]
