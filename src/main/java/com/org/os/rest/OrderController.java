@@ -55,7 +55,7 @@ public class OrderController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUser = authentication.getPrincipal().toString();
         Users user = usersService.getUserByUsername(currentUser);
-        return ResponseEntity.ok(user.getOrders());
+        return ResponseEntity.ok(user.getOrderList());
     }
 
     @GetMapping("/check/{id}")

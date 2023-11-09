@@ -55,7 +55,7 @@ public class Users implements UserDetails {
     private List<Token> tokens;
 
     @OneToMany(mappedBy = "userOrders")
-    private List<Order> orders;
+    private List<Order> orderList;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

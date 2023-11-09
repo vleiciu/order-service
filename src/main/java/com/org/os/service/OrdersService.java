@@ -11,8 +11,8 @@ import com.org.os.persistance.repository.OrdersRepository;
 import com.org.os.persistance.repository.RestaurantRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
-import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -34,9 +34,7 @@ public class OrdersService {
 
     private RestaurantRepository restaurantRepository;
 
-    private KafkaProducer<String, String> producer;
-
-    private KafkaProducer<String, PaymentUpdate> paymentProducer;
+    private KafkaTemplate<String, String> producer;
 
     private final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -62,7 +60,7 @@ public class OrdersService {
     }
 
     private void cancelRestaurantPending(Order order) {
-        ProducerRecord<String, String> record = new ProducerRecord<>(ORDER_CHANNEL, MESSAGE, order.getCorrelationId());
+        ProducerRecord<String, String> record = new ProducerRecord<>(ORDER_CHANNEL, order.getCorrelationId());
 
         record.headers().add(SUBJECT, "%s_%s".formatted(Subject.RESTAURANT.name(), REQUEST.name()).getBytes());
         record.headers().add(MESSAGE_TYPE, MessageType.CANCEL.name().getBytes());
@@ -70,7 +68,7 @@ public class OrdersService {
     }
 
     private void cancelPaymentPending(Order order) {
-        ProducerRecord<String, String> record = new ProducerRecord<>(ORDER_CHANNEL, MESSAGE, order.getCorrelationId());
+        ProducerRecord<String, String> record = new ProducerRecord<>(ORDER_CHANNEL, order.getCorrelationId());
 
         record.headers().add(SUBJECT, "%s_%s".formatted(Subject.PAYMENT.name(), REQUEST.name()).getBytes());
         record.headers().add(MESSAGE_TYPE, MessageType.CANCEL.name().getBytes());
@@ -104,7 +102,7 @@ public class OrdersService {
     }
 
     private void sendOrder(Order order) {
-        ProducerRecord<String, String> record = new ProducerRecord<>(ORDER_CHANNEL, MESSAGE, order.getCorrelationId());
+        ProducerRecord<String, String> record = new ProducerRecord<>(ORDER_CHANNEL, order.getCorrelationId());
 
         record.headers().add(SUBJECT, "%s_%s".formatted(Subject.PAYMENT.name(), REQUEST.name()).getBytes());
         record.headers().add(MESSAGE_TYPE, MessageType.REGULAR.name().getBytes());
@@ -116,10 +114,10 @@ public class OrdersService {
     }
 
     public void registerPaymentInfo(PaymentUpdate paymentUpdate) {
-        ProducerRecord<String, PaymentUpdate> record = new ProducerRecord<>(PAYMENT_CHANNEL, MESSAGE, paymentUpdate);
+        ProducerRecord<String, String> record = new ProducerRecord<>(PAYMENT_CHANNEL, paymentUpdate.toString());
 
         record.headers().add(SUBJECT, "%s_%s".formatted(Subject.PAYMENT.name(), REQUEST.name()).getBytes());
         record.headers().add(MESSAGE_TYPE, MessageType.INFO.name().getBytes());
-        paymentProducer.send(record);
+        producer.send(record);
     }
 }

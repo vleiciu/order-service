@@ -9,6 +9,6 @@ import java.util.Optional;
 @Repository
 public interface OrdersRepository extends JpaRepository<Order, Integer> {
 
-    Optional<Order> findById(String id);
+    Optional<Order> findById(Integer id);
     Optional<Order> findByCorrelationId(String correlationId);
 }

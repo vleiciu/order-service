@@ -9,8 +9,8 @@ import com.org.os.persistance.entity.Order;
 import com.org.os.service.OrdersService;
 import lombok.AllArgsConstructor;
 import org.apache.camel.Exchange;
-import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import static com.org.ma.enums.Header.REQUEST;
@@ -22,7 +22,7 @@ public class RestaurantResponseOrchestration implements ResponseOrchestration {
 
     private OrdersService service;
 
-    private KafkaProducer<String, String> producer;
+    private KafkaTemplate<String, String> producer;
 
     @Override
     public void handleResponse(Exchange e) {
@@ -37,7 +37,7 @@ public class RestaurantResponseOrchestration implements ResponseOrchestration {
     private void handleRegularResponse(Exchange e) {
         String correlationId = e.getMessage(String.class);
         Order order = service.getOrderByCorrelationId(correlationId);
-        ProducerRecord<String, String> record = new ProducerRecord<>(ORDER_CHANNEL, MESSAGE, correlationId);
+        ProducerRecord<String, String> record = new ProducerRecord<>(ORDER_CHANNEL, correlationId);
 
         record.headers().add(SUBJECT, "%s_%s".formatted(Subject.DELIVERY.name(), REQUEST.name()).getBytes());
         record.headers().add(MESSAGE_TYPE, MessageType.REGULAR.name().getBytes());
@@ -48,7 +48,7 @@ public class RestaurantResponseOrchestration implements ResponseOrchestration {
 
     private void handleRejectCancelResponse(Exchange e) {
         String correlationId = e.getMessage(String.class);
-        ProducerRecord<String, String> record = new ProducerRecord<>(ORDER_CHANNEL, MESSAGE, correlationId);
+        ProducerRecord<String, String> record = new ProducerRecord<>(ORDER_CHANNEL, correlationId);
         record.headers().add(SUBJECT, "%s_%s".formatted(Subject.PAYMENT.name(), REQUEST.name()).getBytes());
         record.headers().add(Constants.MESSAGE_TYPE, e.getIn().getHeader(Constants.MESSAGE_TYPE, MessageType.class).toString().getBytes());
         producer.send(record);
