@@ -4,17 +4,13 @@ pipeline {
     tools {
         // Install the Maven version configured as "M3" and add it to the path.
         maven "m2"
+        'org.jenkinsci.plugins.docker.commons.tools.DockerTool' 'docker'
     }
 
     stages {
         stage('Build') {
             steps {
                 sh "mvn -Dmaven.test.failure.ignore=true clean package"
-            }
-        }
-        stage('Test') {
-            steps {
-                sh "mvn -Dmaven.test.failure.ignore=true clean test"
             }
         }
         stage('Deploy') {
@@ -34,12 +30,18 @@ pipeline {
                                      type: 'jar']
                                 ]
                              )
-                        withCredentials([usernamePassword(credentialsId: 'dockerhub-login', usernameVariable:'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                            sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
-                            sh 'docker build -t thaimore/order-service:latest . --build-arg=LOCATION=classpath:/deploy.properties --build-arg=JAR_FILE=target/OrderService-0.0.1-SNAPSHOT.jar'
-                            sh 'docker push thaimore/order-service:latest'
-                        }
                     }
+        }
+        stage('Build and push docker image') {
+            steps {
+            script {
+                docker.withTool('docker') {
+                docker.withRegistry('https://hub.docker.com', 'dockerhub-login') {
+                    build('thaimore/order-service:latest').push()
+                }
+                }
+            }
+            }
         }
     }
 }
